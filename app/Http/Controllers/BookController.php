@@ -18,9 +18,18 @@ class BookController extends Controller
     public function index(): JsonResponse
     {
         try {
-            return response()->json();
+            $books = Book::all();
+
+            return response()->json([
+                'data' => $books,
+                'success' => true
+            ]);
         } catch (Throwable $exception) {
-            return response()->json();
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 
@@ -33,13 +42,7 @@ class BookController extends Controller
     public function store(BookRequest $request): JsonResponse
     {
         try {
-            $book = new Book();
-
-            $book->author = $request->input('author');
-            $book->genre = $request->input('genre');
-            $book->publisher = $request->input('publisher');
-
-            $book->save();
+            $book = Book::query()->create($request->validated());
 
             return response()->json([
                 'data' => $book,
