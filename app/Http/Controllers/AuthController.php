@@ -6,6 +6,7 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Throwable;
 
@@ -72,6 +73,21 @@ class AuthController extends Controller
         } catch (Throwable $exception) {
             return response()->json([
                 'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function logout(): JsonResponse
+    {
+        try {
+            Auth::user()->tokens()->delete();
+            return response()->json([
+                'success' => true,
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
                 'success' => false,
                 'message' => $exception->getMessage()
             ]);
