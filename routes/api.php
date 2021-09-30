@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,8 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
-
+Route::resource('books', BookController::class);
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

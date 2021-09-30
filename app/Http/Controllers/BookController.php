@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookRequest;
+use App\Models\Book;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Throwable;
@@ -25,15 +27,30 @@ class BookController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param BookRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(BookRequest $request): JsonResponse
     {
         try {
-            return response()->json();
+            $book = new Book();
+
+            $book->author = $request->input('author');
+            $book->genre = $request->input('genre');
+            $book->publisher = $request->input('publisher');
+
+            $book->save();
+
+            return response()->json([
+                'data' => $book,
+                'success' => true,
+            ]);
         } catch (Throwable $exception) {
-            return response()->json();
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 
