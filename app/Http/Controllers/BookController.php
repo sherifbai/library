@@ -75,16 +75,35 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param BookRequest $request
      * @param int $id
      * @return JsonResponse
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(BookRequest $request, int $id): JsonResponse
     {
         try {
-            return response()->json();
+            $book = Book::query()->findOrFail($id);
+
+            if (!$book) {
+               return response()->json([
+                   'data' => null,
+                   'success' => false,
+                   'message' => 'Book doesnt found'
+               ]);
+            }
+
+            $book->update($request->validated());
+
+            return response()->json([
+                'data' => $book,
+                'success' => true
+            ]);
         } catch (Throwable $exception) {
-            return response()->json();
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 
