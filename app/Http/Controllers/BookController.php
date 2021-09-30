@@ -116,9 +116,28 @@ class BookController extends Controller
     public function destroy(int $id): JsonResponse
     {
         try {
-            return response()->json();
+            $book = Book::query()->findOrFail($id);
+
+            if (!$book) {
+                return response()->json([
+                    'data' => null,
+                    'success' => false,
+                    'message' => 'Book doesnt found'
+                ]);
+            }
+
+            $book->delete();
+
+            return response()->json([
+                'data' => null,
+                'success' => true
+            ]);
         } catch (Throwable $exception) {
-            return response()->json();
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 }
