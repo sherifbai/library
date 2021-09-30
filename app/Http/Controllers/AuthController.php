@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
 use Throwable;
 
 class AuthController extends Controller
@@ -30,6 +32,47 @@ class AuthController extends Controller
             return response()->json([
                 'success' => false,
                 'token' => null,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function login(LoginRequest $request): JsonResponse
+    {
+        try {
+            $user = User::query()->where([
+                'email' => $request->input('email')
+            ])->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'data'=> null,
+                    'message' => 'User doesnt found'
+                ]);
+            }
+
+            $hashedPw = Hash::check($request->input('password'), $user->password);
+
+            if (!$hashedPw) {
+                return response()->json([
+                    'success' => false,
+                    'data' => null,
+                    'message' => 'Passwords doesnt match'
+                ]);
+            }
+
+            $token = $user->createToken("Sherif'sSecretKey")->plainTextToken;
+
+            return response()->json([
+                'data' => $user->id,
+                'success' => true,
+                'token' => $token
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'data' => null,
+                'success' => false,
                 'message' => $exception->getMessage()
             ]);
         }
