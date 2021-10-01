@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\GenreRequest;
 use App\Models\Genre;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Throwable;
 
 class GenreController extends Controller
@@ -126,7 +124,7 @@ class GenreController extends Controller
                 'data' => null,
                 'success' => true
             ]);
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             return response()->json([
                 'data' => null,
                 'success' => false,
