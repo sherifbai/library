@@ -31,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @property string $name
  * @method static Builder|Book whereName($value)
  * @property-read int|null $genre_count
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Genre[] $genres
+ * @property-read int|null $genres_count
  */
 class Book extends Model
 {
