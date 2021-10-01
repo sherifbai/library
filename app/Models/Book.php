@@ -24,6 +24,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Book wherePublisher($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Book whereUpdatedAt($value)
  * @mixin \Eloquent
+ * @property string $name
+ * @method static \Illuminate\Database\Eloquent\Builder|Book whereName($value)
  */
 class Book extends Model
 {

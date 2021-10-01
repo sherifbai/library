@@ -66,7 +66,7 @@ class AuthController extends Controller
             $token = $user->createToken("Sherif'sSecretKey")->plainTextToken;
 
             return response()->json([
-                'data' => $user->id,
+                'data' => $user,
                 'success' => true,
                 'token' => $token
             ]);

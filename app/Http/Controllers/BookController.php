@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Throwable;
 
 class BookController extends Controller
