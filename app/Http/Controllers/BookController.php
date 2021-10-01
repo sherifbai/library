@@ -65,9 +65,18 @@ class BookController extends Controller
     public function show(int $id): JsonResponse
     {
         try {
-            return response()->json();
+            $book = Book::query()->findOrFail($id);
+
+            return response()->json([
+                'data' => $book,
+                'success' => true
+            ]);
         } catch (Throwable $exception) {
-            return response()->json();
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
         }
     }
 
