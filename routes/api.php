@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookOrderController;
 use App\Http\Controllers\GenreController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,6 +31,9 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             'genres' => GenreController::class
         ]);
     });
+    Route::apiResources([
+        'orders' => BookOrderController::class
+    ]);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
