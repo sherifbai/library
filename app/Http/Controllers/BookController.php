@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
-use Gate;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class BookController extends Controller
@@ -19,7 +18,7 @@ class BookController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $books = Book::all();
+            $books = Book::with('genres')->get()->all();
 
             return response()->json([
                 'data' => $books,
@@ -44,6 +43,10 @@ class BookController extends Controller
     {
         try {
             $book = Book::query()->create($request->validated());
+
+            $genresIds = $request->input('genre');
+
+            $book->genres()->attach($genresIds);
 
             return response()->json([
                 'data' => $book,
@@ -95,11 +98,11 @@ class BookController extends Controller
             $book = Book::query()->findOrFail($id);
 
             if (!$book) {
-               return response()->json([
-                   'data' => null,
-                   'success' => false,
-                   'message' => 'Book doesnt found'
-               ]);
+                return response()->json([
+                    'data' => null,
+                    'success' => false,
+                    'message' => 'Book doesnt found'
+                ]);
             }
 
             $book->update($request->validated());
@@ -149,5 +152,42 @@ class BookController extends Controller
                 'message' => $exception->getMessage()
             ]);
         }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = Book::with('genres');
+
+        if ($request->input('name')) {
+            $query->where('name', 'LIKE', $request->input('name'));
+        }
+
+        if ($request->input('author')) {
+            $query->where('author', 'LIKE', $request->input('author'));
+        }
+
+        if ($request->input('publisher')) {
+            $query->where('publisher', 'LIKE', $request->input('publisher'));
+        }
+
+        if ($request->input('genre')) {
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('name', 'like', $request->input('genre'));
+            }
+            );
+        }
+
+        $result = $query->paginate();
+
+        return response()->json([
+            'data' => $result,
+            'success' => true,
+        ]);
     }
 }

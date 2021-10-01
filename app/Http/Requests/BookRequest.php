@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class BookRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class BookRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return \Auth::check();
+        return Auth::check();
     }
 
     /**
@@ -26,7 +27,6 @@ class BookRequest extends FormRequest
         return [
             'name' => 'required|string',
             'author' => 'required|string',
-            'genre' => 'required|string',
             'publisher' => 'required|string'
         ];
     }
