@@ -19,15 +19,17 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
+Route::get('/', [BookController::class, 'index']);
+Route::get('/search', [BookController::class, 'search']);
+
 Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::post('/librarian/{id}', [AuthController::class, 'makeLibrarian'])->middleware('isAdmin');
     Route::group(['middleware' => ['isLibrarianOrAdmin']], function () {
         Route::apiResources([
             'books' => BookController::class,
             'genres' => GenreController::class
         ]);
     });
-
-    Route::get('/', [BookController::class, 'index']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });
