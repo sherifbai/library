@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\GenreController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,9 +20,14 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
-    Route::apiResources([
-        'books' => BookController::class,
-    ]);
+    Route::group(['middleware' => ['isLibrarianOrAdmin']], function () {
+        Route::apiResources([
+            'books' => BookController::class,
+            'genres' => GenreController::class
+        ]);
+    });
+
+    Route::get('/', [BookController::class, 'index']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

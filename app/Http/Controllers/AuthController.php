@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -15,11 +16,15 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
+            $role_user = Role::query()->where([
+                'name' => 'user'
+            ])->first();
+
             $user = User::query()->create([
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'password' => bcrypt($request->input('password')),
-                'role_id' => 2
+                'role_id' => $role_user->id
             ]);
 
             $token = $user->createToken("Sherifs'SecretKey")->plainTextToken;
