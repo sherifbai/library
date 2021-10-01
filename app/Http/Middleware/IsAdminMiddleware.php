@@ -21,7 +21,7 @@ class IsAdminMiddleware
         if(!(auth()->user()->role_id == $role->id)) {
             return response()->json([
                 'success' => false,
-                'message' => "You have not permission here"
+                'message' => "You are not admin"
             ]);
         }
         return $next($request);
