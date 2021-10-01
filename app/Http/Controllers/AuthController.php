@@ -13,6 +13,12 @@ use Throwable;
 
 class AuthController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @param RegisterRequest $request
+     * @return JsonResponse
+     */
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
@@ -43,6 +49,13 @@ class AuthController extends Controller
         }
     }
 
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param LoginRequest $request
+     * @return JsonResponse
+     */
     public function login(LoginRequest $request): JsonResponse
     {
         try {
@@ -84,6 +97,11 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return JsonResponse
+     */
     public function logout(): JsonResponse
     {
         try {
@@ -93,6 +111,37 @@ class AuthController extends Controller
             ]);
         } catch (Throwable $exception) {
             return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param int $id
+     * @return JsonResponse
+     */
+    public function makeLibrarian(int $id): JsonResponse
+    {
+        try {
+            $role = Role::query()->where([
+                'name' => 'librarian'
+            ])->first();
+            $user = User::findOrFail($id);
+
+            $user->role_id = $role->id;
+            $user->save();
+
+            return response()->json([
+                'data' => $user,
+                'success' => true,
+                'librarian' => $user->name
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'data' => null,
                 'success' => false,
                 'message' => $exception->getMessage()
             ]);
