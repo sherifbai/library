@@ -32,6 +32,11 @@ class BookOrder extends Model
 {
     use HasFactory;
 
+    public const STATUS_CANCELED = 0;
+    public const STATUS_RESERVED = 1;
+    public const STATUS_ACTIVE = 2;
+    public const STATUS_COMPLETED = 3;
+
     protected $fillable = ['book_id', 'user_id'];
 
     public function books(): BelongsToMany

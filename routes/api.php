@@ -30,10 +30,10 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
             'books' => BookController::class,
             'genres' => GenreController::class
         ]);
+        Route::post('/orders/give', [BookOrderController::class, 'giveBook']);
+        Route::post('/orders/accept', [BookOrderController::class, 'acceptBook']);
     });
-    Route::apiResources([
-        'orders' => BookOrderController::class
-    ]);
+    Route::apiResources(['orders' => BookOrderController::class]);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

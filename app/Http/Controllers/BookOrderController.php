@@ -44,14 +44,18 @@ class BookOrderController extends Controller
         try {
             $book = Book::query()->findOrFail($request->input('book_id'));
 
-            $isTaken = BookOrder::query()->where('book_id', '=', $book->id)->first();
+            $isTaken = BookOrder::query()->where('book_id', '=', $book->id)
+                ->where('status', 'NOT IN', [
+                    BookOrder::STATUS_ACTIVE,
+                    BookOrder::STATUS_RESERVED
+                ])->first();
 
-            if (!empty($isTaken)) {
+            if ($isTaken !== null) {
                 return response()->json([
                     'data' => null,
                     'success' => false,
                     'message' => 'Book already taken'
-                ]);
+                ], 404);
             }
 
             $order = BookOrder::query()->create([
@@ -88,7 +92,7 @@ class BookOrderController extends Controller
                     'data' => null,
                     'success' => false,
                     'message' => 'You are not reserved this book'
-                ]);
+                ], 401);
             }
 
             return response()->json([
@@ -116,24 +120,28 @@ class BookOrderController extends Controller
         try {
             $book = Book::query()->findOrFail($request->input('book_id'));
 
-            $isTaken = BookOrder::query()->where('book_id', '=', $book->id)->first();
-
             $order = BookOrder::query()->findOrFail($id);
 
-            if ($order->user_id != auth()->user()->id) {
+            if (!($order->user_id != auth()->user()->id)) {
                 return response()->json([
                     'data' => null,
                     'success' => false,
                     'message' => 'You are not reserved this book'
-                ]);
+                ],401);
             }
 
-            if (!empty($isTaken)) {
+            $isTaken = BookOrder::query()->where('book_id', '=', $book->id)
+                ->where('status', 'NOT IN', [
+                    BookOrder::STATUS_ACTIVE,
+                    BookOrder::STATUS_RESERVED
+                ])->first();
+
+            if ($isTaken !== null) {
                 return response()->json([
                     'data' => null,
                     'success' => false,
                     'message' => 'Book already taken'
-                ]);
+                ], 404);
             }
 
             $order->update([
@@ -170,13 +178,69 @@ class BookOrderController extends Controller
                     'data' => null,
                     'success' => false,
                     'message' => 'You are not reserved this book'
-                ]);
+                ], 401);
             }
 
             $order->delete();
 
             return response()->json([
                 'data' => null,
+                'success' => true
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function giveBook(Request $request): JsonResponse
+    {
+        try {
+            $order = BookOrder::query()->findOrFail($request->input('order_id'));
+
+            $order->status = BookOrder::STATUS_ACTIVE;
+
+            $order->save();
+
+            return response()->json([
+                'data' => $order,
+                'success' => true
+            ]);
+        } catch (Throwable $exception) {
+            return response()->json([
+                'data' => null,
+                'success' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function acceptBook(Request $request): JsonResponse
+    {
+        try {
+            $order = BookOrder::query()->findOrFail($request->input('order_id'));
+
+            $order->status = BookOrder::STATUS_COMPLETED;
+
+            $order->save();
+
+            return response()->json([
+                'data' => $order,
                 'success' => true
             ]);
         } catch (Throwable $exception) {
